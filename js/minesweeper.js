@@ -883,4 +883,9 @@ var util = {
 /* =========================================== */
 
   core.init();
+
+  $('#entryscreen').on('click', function(){
+    $(this).fadeOut(500);
+  });
+  setTimeout(function(){ $('#entryscreen').fadeOut(500); }, 2000);
 });
