@@ -3,6 +3,8 @@
   const ctx = canvas.getContext('2d');
   const grid = 20;
   let count = 0;
+  const initialSpeed = 8; // higher value = slower snake
+  let speed = initialSpeed;
   const snake = {
     x: 160,
     y: 160,
@@ -20,9 +22,21 @@
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
+  function resetGame() {
+    snake.x = 160;
+    snake.y = 160;
+    snake.cells = [];
+    snake.maxCells = 4;
+    dx = grid;
+    dy = 0;
+    speed = initialSpeed;
+    apple.x = getRandomInt(0, 20) * grid;
+    apple.y = getRandomInt(0, 20) * grid;
+  }
+
   function loop() {
     requestAnimationFrame(loop);
-    if (++count < 4) {
+    if (++count < speed) {
       return;
     }
     count = 0;
@@ -31,16 +45,11 @@
     snake.x += dx;
     snake.y += dy;
 
-    if (snake.x < 0) {
-      snake.x = canvas.width - grid;
-    } else if (snake.x >= canvas.width) {
-      snake.x = 0;
-    }
-
-    if (snake.y < 0) {
-      snake.y = canvas.height - grid;
-    } else if (snake.y >= canvas.height) {
-      snake.y = 0;
+    if (snake.x < 0 ||
+        snake.x >= canvas.width ||
+        snake.y < 0 ||
+        snake.y >= canvas.height) {
+      resetGame();
     }
 
     snake.cells.unshift({x: snake.x, y: snake.y});
@@ -57,20 +66,16 @@
 
       if (cell.x === apple.x && cell.y === apple.y) {
         snake.maxCells++;
+        if (speed > 2) {
+          speed--;
+        }
         apple.x = getRandomInt(0, 20) * grid;
         apple.y = getRandomInt(0, 20) * grid;
       }
 
       for (let i = index + 1; i < snake.cells.length; i++) {
         if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-          snake.x = 160;
-          snake.y = 160;
-          snake.cells = [];
-          snake.maxCells = 4;
-          dx = grid;
-          dy = 0;
-          apple.x = getRandomInt(0, 20) * grid;
-          apple.y = getRandomInt(0, 20) * grid;
+          resetGame();
         }
       }
     });
